@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatroom</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        height: 100vh;
+        background: #0b0c0e;
+        color: #e8e9eb;
+        font-family: "DM Sans", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 24px;
+      }
+
+      .app {
+        width: 100%;
+        max-width: 1050px;
+        height: 85vh;
+        min-height: 500px;
+        display: flex;
+        background: #111315;
+        border: 1px solid #25282c;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      /* Sidebar */
+
+      .sidebar {
+        width: 250px;
+        flex-shrink: 0;
+        background: #0e1012;
+        border-right: 1px solid #25282c;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .brand {
+        height: 75px;
+        padding: 0 22px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #25282c;
+      }
+
+      .brand h2 {
+        font-size: 19px;
+        letter-spacing: -0.7px;
+      }
+
+      .brand span {
+        color: #858b95;
+      }
+
+      .sidebar-label {
+        padding: 25px 22px 13px;
+        color: #777d86;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+      }
+
+      .room {
+        margin: 0 10px;
+        padding: 12px;
+        border-radius: 7px;
+        background: #1c2025;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+
+      .room-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 7px;
+        background: #292e35;
+        display: grid;
+        place-items: center;
+        color: #c5cbd4;
+        font-size: 17px;
+      }
+
+      .room-info h4 {
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .room-info p {
+        color: #858b95;
+        font-size: 10px;
+        margin-top: 4px;
+      }
+
+      .sidebar-footer {
+        margin-top: auto;
+        border-top: 1px solid #25282c;
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .user-avatar {
+        width: 34px;
+        height: 34px;
+        background: #30343b;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .user-info h4 {
+        font-size: 12px;
+      }
+
+      .user-info p {
+        color: #858b95;
+        font-size: 10px;
+        margin-top: 3px;
+      }
+
+      /* Chat */
+
+      .chat {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .chat-header {
+        height: 75px;
+        flex-shrink: 0;
+        padding: 0 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #25282c;
+      }
+
+      .chat-header h2 {
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      .chat-header p {
+        font-size: 11px;
+        color: #858b95;
+        margin-top: 4px;
+      }
+
+      .header-right {
+        color: #858b95;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .status-dot {
+        height: 7px;
+        width: 7px;
+        border-radius: 50%;
+        background: #8b929d;
+      }
+
+      /* Messages */
+
+      #messages {
+        flex: 1;
+        padding: 25px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      #messages::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      #messages::-webkit-scrollbar-thumb {
+        background: #343940;
+        border-radius: 10px;
+      }
+
+      .message-row {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        max-width: 75%;
+        align-self: flex-start;
+      }
+
+      .message-row.sent {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+      }
+
+      .message-avatar {
+        height: 30px;
+        width: 30px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: #292e35;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        color: #d0d4db;
+      }
+
+      .message-content {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+      }
+
+      .sent .message-content {
+        align-items: flex-end;
+      }
+
+      .message-meta {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 0 3px;
+      }
+
+      .sent .message-meta {
+        flex-direction: row-reverse;
+      }
+
+      .sender-name {
+        font-size: 11px;
+        font-weight: 600;
+        color: #c1c6ce;
+      }
+
+      .message-time {
+        font-size: 9px;
+        color: #707782;
+      }
+
+      .message-bubble {
+        background: #202328;
+        border: 1px solid #2b2f35;
+        color: #e1e3e7;
+        padding: 11px 14px;
+        border-radius: 4px 12px 12px 12px;
+        font-size: 13px;
+        line-height: 1.55;
+        overflow-wrap: anywhere;
+      }
+
+      .sent .message-bubble {
+        background: #303944;
+        border-color: #3b4653;
+        color: #f0f2f5;
+        border-radius: 12px 4px 12px 12px;
+      }
+
+      .empty-state {
+        margin: auto;
+        text-align: center;
+        color: #777d86;
+      }
+
+      .empty-state h3 {
+        font-size: 16px;
+        color: #d5d8dd;
+        font-weight: 600;
+        margin-bottom: 7px;
+      }
+
+      .empty-state p {
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      /* Input */
+
+      .chat-footer {
+        padding: 18px 25px 20px;
+        border-top: 1px solid #25282c;
+      }
+
+      .input-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 7px 8px 7px 15px;
+        background: #191c20;
+        border: 1px solid #30343b;
+        border-radius: 9px;
+      }
+
+      .input-container:focus-within {
+        border-color: #515b69;
+      }
+
+      #message {
+        flex: 1;
+        min-width: 0;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #e8e9eb;
+        font-family: inherit;
+        font-size: 13px;
+      }
+
+      #message::placeholder {
+        color: #747b85;
+      }
+
+      #sendBtn {
+        height: 36px;
+        width: 38px;
+        border: none;
+        border-radius: 7px;
+        background: #d5d9df;
+        color: #17191c;
+        cursor: pointer;
+        font-size: 17px;
+      }
+
+      #sendBtn:hover {
+        background: #fff;
+      }
+
+      .footer-note {
+        text-align: center;
+        color: #666d77;
+        font-size: 10px;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 650px) {
+        body {
+          padding: 0;
+        }
+
+        .app {
+          height: 100dvh;
+          min-height: 0;
+          border: none;
+          border-radius: 0;
+        }
+
+        .sidebar {
+          display: none;
+        }
+
+        .chat-header {
+          padding: 0 17px;
+        }
+
+        #messages {
+          padding: 20px 14px;
+        }
+
+        .message-row {
+          max-width: 90%;
+        }
+
+        .chat-footer {
+          padding: 14px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <h2>chat<span>room.</span></h2>
+        </div>
+
+        <div class="sidebar-label">CHANNELS</div>
+
+        <div class="room">
+          <div class="room-icon">#</div>
+          <div class="room-info">
+            <h4>general</h4>
+            <p>Everyone is welcome</p>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="user-avatar">Y</div>
+          <div class="user-info">
+            <h4>You</h4>
+            <p>Connected</p>
+          </div>
+        </div>
+      </aside>
+
+      <section class="chat">
+        <header class="chat-header">
+          <div>
+            <h2># general</h2>
+            <p>A place to talk with everyone.</p>
+          </div>
+
+          <div class="header-right">
+            <span class="status-dot"></span>
+            Connected
+          </div>
+        </header>
+
+        <div id="messages">
+          <div class="empty-state" id="emptyState">
+            <h3>No messages yet</h3>
+            <p>Send a message to start the conversation.</p>
+          </div>
+        </div>
+
+        <footer class="chat-footer">
+          <div class="input-container">
+            <input
+              type="text"
+              id="message"
+              placeholder="Message #general"
+              autocomplete="off"
+            />
+
+            <button id="sendBtn" aria-label="Send">↑</button>
+          </div>
+        </footer>
+      </section>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+      const socket = io();
+
+      const sendBtn = document.getElementById("sendBtn");
+      const messageInput = document.getElementById("message");
+      const allMessages = document.getElementById("messages");
+
+      let clientId = localStorage.getItem("clientId");
+      console.log(clientId);
+
+      if (!clientId) {
+        clientId = crypto.randomUUID();
+        console.log(clientId);
+        localStorage.setItem("clientId", clientId);
+      }
+
+      function sendMessage() {
+        const message = messageInput.value.trim();
+
+        if (!message) return;
+
+        socket.emit("user-message", {
+          message,
+          clientId,
+        });
+
+        messageInput.value = "";
+        messageInput.focus();
+      }
+
+      function displayMessage(data) {
+        document.getElementById("emptyState")?.remove();
+
+        const isMine = data.clientId === clientId;
+
+        const row = document.createElement("div");
+        row.classList.add("message-row");
+
+        if (isMine) {
+          row.classList.add("sent");
+        }
+
+        const avatar = document.createElement("div");
+        avatar.classList.add("message-avatar");
+        avatar.innerText = isMine ? "Y" : "O";
+
+        const content = document.createElement("div");
+        content.classList.add("message-content");
+
+        const meta = document.createElement("div");
+        meta.classList.add("message-meta");
+
+        const name = document.createElement("span");
+        name.classList.add("sender-name");
+        name.innerText = isMine ? "You" : "Other user";
+
+        const time = document.createElement("span");
+        time.classList.add("message-time");
+        time.innerText = new Date(data.createdAt).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        const bubble = document.createElement("div");
+        bubble.classList.add("message-bubble");
+        bubble.innerText = data.message;
+
+        meta.append(name, time);
+        content.append(meta, bubble);
+        row.append(avatar, content);
+
+        allMessages.appendChild(row);
+
+        allMessages.scrollTop = allMessages.scrollHeight;
+      }
+
+      socket.on("chat-history", (messages) => {
+        allMessages.innerHTML = "";
+
+        if (messages.length === 0) {
+          allMessages.innerHTML = `
+            <div class="empty-state" id="emptyState">
+                <h3>No messages yet</h3>
+                <p>Send a message to start the conversation.</p>
+            </div>
+        `;
+          return;
+        }
+
+        messages.forEach(displayMessage);
+      });
+
+      socket.on("message", displayMessage);
+
+      sendBtn.addEventListener("click", sendMessage);
+
+      messageInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          sendMessage();
+        }
+      });
+    </script>
+  </body>
+</html>
